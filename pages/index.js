@@ -82,15 +82,23 @@ export default function Home() {
     setLoading(true)
     fetch(`/api/parkingLot/${parking}/${loft}`, { method: "POST" })
       .then((r) => r.json())
-      .then(setData)
-      .then(()=>setLoading(false));
+      .then(()=>setLoading(false))
+      .then((data)=>{
+        if(!data.error) {
+          setData(data);
+        }
+      });
   };
   useDeepCompareEffect(() => {
     setLoading(true)
     fetch(`/api/parkingLot/0/0`, { method: "GET" })
       .then((r) => r.json())
-      .then(setData)
-      .then(()=>setLoading(false));
+      .then(()=>setLoading(false))
+      .then((data)=>{
+        if(!data.error) {
+          setData(data);
+        }
+      });
   }, [data]);
 
   return (
