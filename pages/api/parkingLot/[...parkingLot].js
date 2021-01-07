@@ -48,13 +48,12 @@ export default async function handler(req, res) {
       const {
         query: { parkingLot },
       } = req;
-      console.log(parkingLot);
       if (
         !parkings.some((p) => p === +parkingLot[0]) ||
         !loft.some((p) => p === +parkingLot[1])
       ) {
         res.statusCode = 403;
-        res.end(JSON.stringify({ error: "You made some errors jajaja" }));
+        res.end(JSON.stringify({ error: "invalid loft and parkinglot" }));
         return;
       }
       const { error } = await excuteQuery({
@@ -63,7 +62,7 @@ export default async function handler(req, res) {
       });
       if (error) {
         res.statusCode = 403;
-        res.end(JSON.stringify({ error: "You made some errors jajaja" }));
+        res.end(JSON.stringify({ error }));
       } else {
         const data = await excuteQuery({
           query: `select * from parkinglot`,
@@ -75,7 +74,7 @@ export default async function handler(req, res) {
           res.end(JSON.stringify(data));
         } else {
           res.statusCode = 403;
-          res.end(JSON.stringify({ error: "You made some errors jajaja" }));
+          res.end(JSON.stringify({ error: data }));
         }
       }
       break;
@@ -90,7 +89,7 @@ export default async function handler(req, res) {
         res.end(JSON.stringify(data));
       } else {
         res.statusCode = 403;
-        res.end(JSON.stringify({ error: "You made some errors jajaja" }));
+        res.end(JSON.stringify({ error: data }));
       }
       break;
 
