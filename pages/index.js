@@ -9,24 +9,24 @@ import useDeepCompareEffect from "use-deep-compare-effect";
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const loftList = [
-  null,
-  201,
-  202,
-  203,
-  204,
-  301,
-  302,
-  303,
-  304,
-  401,
-  402,
-  403,
-  404,
-  501,
-  502,
-  503,
-  504,
-  601,
+  'None',
+  '201',
+  '202',
+  '203',
+  '204',
+  '301',
+  '302',
+  '303',
+  '304',
+  '401',
+  '402',
+  '403',
+  '404',
+  '501',
+  '502',
+  '503',
+  '504',
+  '601',
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -82,23 +82,25 @@ export default function Home() {
     setLoading(true)
     fetch(`/api/parkingLot/${parking}/${loft}`, { method: "POST" })
       .then((r) => r.json())
-      .then(()=>setLoading(false))
       .then((data)=>{
-        if(!data.error) {
+        if(data && !data.error) {
+          console.log(data)
           setData(data);
         }
-      });
+      })
+      .then(()=>setLoading(false));
   };
   useDeepCompareEffect(() => {
     setLoading(true)
     fetch(`/api/parkingLot/0/0`, { method: "GET" })
       .then((r) => r.json())
-      .then(()=>setLoading(false))
       .then((data)=>{
-        if(!data.error) {
+        if(data && !data.error) {
+          console.log(data)
           setData(data);
         }
-      });
+      })
+      .then(()=>setLoading(false));
   }, [data]);
 
   return (
@@ -114,11 +116,12 @@ export default function Home() {
           loading ? <CircularProgress color="secondary" /> : <div>Up to date</div>
         }
         <div className="grid-container">
-          {data.map((item) => {
-            const index = item.parkinglot + 1;
+          {data.map((item, index) => {
+            const cardClass = `card${index + 1}`;
             return (
-              <div className="{index}">
+              <div className={cardClass}>
                 <CustomSelect
+                  key={index}
                   itemList={loftList}
                   currentItem={item.loft}
                   parking={item.parkinglot}

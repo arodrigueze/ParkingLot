@@ -16,30 +16,31 @@ async function excuteQuery({ query, values }) {
     await db.end();
     return results;
   } catch (error) {
+    console.log(error);
     return { error };
   }
 }
 
 export default async function handler(req, res) {
   const loft = [
-    null,
-    201,
-    202,
-    203,
-    204,
-    301,
-    302,
-    303,
-    304,
-    401,
-    402,
-    403,
-    404,
-    501,
-    502,
-    503,
-    504,
-    601,
+    "None",
+    "201",
+    "202",
+    "203",
+    "204",
+    "301",
+    "302",
+    "303",
+    "304",
+    "401",
+    "402",
+    "403",
+    "404",
+    "501",
+    "502",
+    "503",
+    "504",
+    "601",
   ];
   const parkings = [1, 2, 3, 4];
   res.setHeader("Content-Type", "application/json");
@@ -50,7 +51,7 @@ export default async function handler(req, res) {
       } = req;
       if (
         !parkings.some((p) => p === +parkingLot[0]) ||
-        !loft.some((p) => p === +parkingLot[1])
+        !loft.some((p) => p === parkingLot[1])
       ) {
         res.statusCode = 403;
         res.end(JSON.stringify({ error: "invalid loft and parkinglot" }));
@@ -58,7 +59,7 @@ export default async function handler(req, res) {
       }
       const { error } = await excuteQuery({
         query: `UPDATE parkinglot SET loft = ? WHERE (parkinglot = ?)`,
-        values: [+parkingLot[1], +parkingLot[0]],
+        values: [parkingLot[1], +parkingLot[0]],
       });
       if (error) {
         res.statusCode = 403;
@@ -83,13 +84,13 @@ export default async function handler(req, res) {
         query: `select * from parkinglot`,
         values: [],
       });
-
       if (data.length) {
         res.statusCode = 200;
         res.end(JSON.stringify(data));
       } else {
         res.statusCode = 403;
-        res.end(JSON.stringify({ error: data }));
+        const error = data;
+        res.end(JSON.stringify(error));
       }
       break;
 
