@@ -6,36 +6,46 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import { useEffect, useState } from "react";
 import useDeepCompareEffect from "use-deep-compare-effect";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Image from "next/image";
 
 const loftList = [
-  'None',
-  '201',
-  '202',
-  '203',
-  '204',
-  '301',
-  '302',
-  '303',
-  '304',
-  '401',
-  '402',
-  '403',
-  '404',
-  '501',
-  '502',
-  '503',
-  '504',
-  '601',
+  "None",
+  "201",
+  "202",
+  "203",
+  "204",
+  "301",
+  "302",
+  "303",
+  "304",
+  "401",
+  "402",
+  "403",
+  "404",
+  "501",
+  "502",
+  "503",
+  "504",
+  "601",
 ];
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120,
+    minWidth: 0,
+    width: "100%",
+    margin: 0,
   },
   selectEmpty: {
     marginTop: theme.spacing(2),
+  },
+  car: {
+    height: "75%",
+    position: "relative",
+  },
+  container: {
+    height: "100%",
   },
 }));
 
@@ -53,9 +63,9 @@ function CustomSelect(props) {
   });
 
   return (
-    <div>
+    <div className={classes.container}>
       <FormControl className={classes.formControl}>
-        <InputLabel id="demo-simple-select-label">Loft</InputLabel>
+        <InputLabel id="demo-simple-select-label">{`Parking ${parking}`}</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
@@ -71,6 +81,13 @@ function CustomSelect(props) {
           })}
         </Select>
       </FormControl>
+      {item !== "None" ? (
+        <div className={classes.car}>
+          <Image src="/car.png" alt="me" layout="fill" />
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 }
@@ -78,29 +95,28 @@ function CustomSelect(props) {
 export default function Home() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const classes = useStyles();
   const setLoftToParkingLot = (parking, loft) => {
-    setLoading(true)
+    setLoading(true);
     fetch(`/api/parkingLot/${parking}/${loft}`, { method: "POST" })
       .then((r) => r.json())
-      .then((data)=>{
-        if(data && !data.error) {
-          console.log(data)
+      .then((data) => {
+        if (data && !data.error) {
           setData(data);
         }
       })
-      .then(()=>setLoading(false));
+      .then(() => setLoading(false));
   };
   useDeepCompareEffect(() => {
-    setLoading(true)
+    setLoading(true);
     fetch(`/api/parkingLot/0/0`, { method: "GET" })
       .then((r) => r.json())
-      .then((data)=>{
-        if(data && !data.error) {
-          console.log(data)
+      .then((data) => {
+        if (data && !data.error) {
           setData(data);
         }
       })
-      .then(()=>setLoading(false));
+      .then(() => setLoading(false));
   }, [data]);
 
   return (
@@ -112,12 +128,16 @@ export default function Home() {
 
       <main>
         <h1 className="title">Rialto Pi Parking Lot</h1>
-        {
-          loading ? <CircularProgress color="secondary" /> : <div>Up to date</div>
-        }
+        {loading ? (
+          <div className="loader">
+            <CircularProgress color="secondary" />
+          </div>
+        ) : (
+          <div className="loader">Up to date</div>
+        )}
         <div className="grid-container">
           {data.map((item, index) => {
-            const cardClass = `card${index + 1}`;
+            const cardClass = `card card${index + 1}`;
             return (
               <div className={cardClass}>
                 <CustomSelect
@@ -134,6 +154,9 @@ export default function Home() {
       </main>
 
       <style jsx>{`
+        .car {
+          height: 100%;
+        }
         .grid-container {
           display: grid;
           grid-template-columns: 50% 50%;
@@ -142,38 +165,21 @@ export default function Home() {
           height: 500px;
         }
         .container {
-          min-height: 100vh;
-          padding: 0 0.5rem;
           display: flex;
           flex-direction: column;
           justify-content: center;
           align-items: center;
+        }
+
+        .loader {
+          height: 30px;
         }
 
         main {
-          padding: 5rem 0;
+          padding: 3rem 0;
           flex: 1;
           display: flex;
           flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
-        footer img {
-          margin-left: 0.5rem;
-        }
-
-        footer a {
-          display: flex;
           justify-content: center;
           align-items: center;
         }
@@ -195,9 +201,9 @@ export default function Home() {
         }
 
         .title {
-          margin: 0;
+          margin-bottom: 25px;
           line-height: 1.15;
-          font-size: 4rem;
+          font-size: 3rem;
         }
 
         .title,
@@ -224,66 +230,41 @@ export default function Home() {
           align-items: center;
           justify-content: center;
           flex-wrap: wrap;
-
           max-width: 800px;
           margin-top: 3rem;
         }
 
-        .card1 {
+        .card {
           margin: 1rem;
           flex-basis: 45%;
-          padding: 1.5rem;
+          padding: 5px;
           text-align: left;
           color: inherit;
           text-decoration: none;
           border: 1px solid #eaeaea;
           border-radius: 10px;
           transition: color 0.15s ease, border-color 0.15s ease;
+        }
+
+        .card1 {
           grid-column-start: 1;
           grid-column-end: 1;
           grid-row-start: 1;
           grid-row-end: 1;
         }
         .card2 {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
           grid-column-start: 2;
           grid-column-end: 2;
           grid-row-start: 1;
           grid-row-end: 1;
         }
         .card3 {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
           grid-column-start: 1;
           grid-column-end: 1;
           grid-row-start: 2;
           grid-row-end: 2;
         }
         .card4 {
-          margin: 1rem;
-          flex-basis: 45%;
-          padding: 1.5rem;
-          text-align: left;
-          color: inherit;
-          text-decoration: none;
-          border: 1px solid #eaeaea;
-          border-radius: 10px;
-          transition: color 0.15s ease, border-color 0.15s ease;
           grid-column-start: 2;
           grid-column-end: 2;
           grid-row-start: 2;
@@ -310,13 +291,6 @@ export default function Home() {
 
         .logo {
           height: 1em;
-        }
-
-        @media (max-width: 600px) {
-          .grid {
-            width: 100%;
-            flex-direction: column;
-          }
         }
       `}</style>
 
